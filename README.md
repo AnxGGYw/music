@@ -1,6 +1,6 @@
 # music
 
-> A music playback page developed by Vue
+> A music playback page developed by Vue kk
 
 ## Build Setup
 
