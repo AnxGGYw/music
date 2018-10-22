@@ -1,11 +1,12 @@
 <template>
   <div class="singer">
-    
+    <list-view :data="singers" @clickItem="clickSinger" ref="singerList"></list-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Singer from 'common/entity/singer'
+import ListView from 'base/listView/listView'
 import { getSingerList } from 'api/singer'
 
 const HOT_NAME = '热'
@@ -73,6 +74,9 @@ export default {
       })
       return hotArr.concat(othersArr)
     }
+  },
+  components: {
+    ListView
   }
 }
 </script>
