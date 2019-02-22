@@ -7,6 +7,9 @@
         class="item"
         @click="clickItem(song, index)"
       >
+        <div class="rank" v-show="rank">
+          <span :class="getRankClass(index)">{{getRankText(index)}}</span>
+        </div>
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
           <p class="desc">{{_getSongDesc(song)}}</p>
