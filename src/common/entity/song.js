@@ -1,5 +1,6 @@
-import { getSongsPurl } from 'api/song'
+import { getSongsPurl, getLyric } from 'api/song'
 import { isEqualSuccessCode } from 'common/js/util'
+import { Base64 } from 'js-base64'
 
 export default class Song {
   constructor({id, mid, singer, name, album, duration, image, url}) {
@@ -12,6 +13,19 @@ export default class Song {
     this.image = image
     this.filename = `C400${this.mid}.m4a`
     this.url = url
+  }
+  // 获取歌词
+  async getSongLyric() {
+    if (this.lyric) {
+      return Promise.resolve(this.lyric)
+    }
+    const res = await getLyric(this.mid)
+    if (isEqualSuccessCode(res.retcode)) {
+      this.lyric = Base64.decode(res.lyric)
+      return Promise.resolve(this.lyric)
+    } else {
+      return Promise.reject(new Error('no lyric'))
+    }
   }
 }
 
