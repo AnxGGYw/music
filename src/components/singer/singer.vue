@@ -7,6 +7,7 @@
 <script type="text/ecmascript-6">
 import Singer from 'common/entity/singer'
 import ListView from 'base/listView/listView'
+import { mapMutations } from 'vuex'
 import { getSingerList } from 'api/singer'
 
 const HOT_NAME = '热'
@@ -22,6 +23,12 @@ export default {
     this._getSingerList()
   },
   methods: {
+    clickSinger(singer) {
+      this.$router.push({
+        path: `/singer/${singer.mid}`
+      })
+      this.setSinger(singer)
+    },
     async _getSingerList() {
       let list = []
       let res = await Promise.all([getSingerList(1), getSingerList(2)]) // 分页 200 条数据
@@ -73,7 +80,10 @@ export default {
         return a.title.charCodeAt(0) - b.title.charCodeAt(0)
       })
       return hotArr.concat(othersArr)
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    })
   },
   components: {
     ListView
