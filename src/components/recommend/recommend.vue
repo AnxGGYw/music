@@ -35,6 +35,7 @@
         <loading></loading>
       </div>
     </scroll>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -43,9 +44,12 @@ import Slider from 'base/slider/slider'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import { getRecommendList, getDiscList } from 'api/recommend'
-import { isEqualSuccessCode } from 'common/js/util'
+import { isEqualSuccessCode, normalizeHttpsUrl } from 'common/js/util'
+import { mapMutations } from 'vuex'
+import { playListMixin } from 'common/js/mixin'
 
 export default {
+  mixins: [playListMixin],
   data() {
     return {
       recommendList: [],
@@ -58,6 +62,11 @@ export default {
     this._getDiscList()
   },
   methods: {
+    handlePlayList(playList) {
+      const bottom = playList.length ? '60px' : ''
+      this.$refs['recommend'].style.bottom = bottom
+      this.$refs['scroll'].refresh()
+    },
     loadImage() {
       if (!this.checkloaded) {
         this.checkloaded = true
@@ -69,15 +78,24 @@ export default {
     async _getRecommendList() {
       let res = await getRecommendList()
       if (isEqualSuccessCode(res.code)) {
-        this.recommendList = res.data.slider
+        this.recommendList = normalizeHttpsUrl(res.data.slider, 'picUrl')
       }
     },
     async _getDiscList() {
       let res = await getDiscList()
       if (isEqualSuccessCode(res.code)) {
-        this.discList = res.data.list
+        this.discList = normalizeHttpsUrl(res.data.list, 'imgurl')
       }
-    }
+    },
+    selectItem(item) {
+      this.$router.push({
+        path: `/recommend/${item.dissid}`
+      })
+      this.setDisc(item)
+    },
+    ...mapMutations({
+      'setDisc': 'SET_DISC'
+    })
   },
   components: {
     Slider,

@@ -1,7 +1,10 @@
 <template>
   <header class="m-header">
     <div class="icon"></div>
-    <h1 class="text">Music</h1>
+    <h1 class="text">Vue-Music</h1>
+    <router-link tag="div" class="mine" to="/user">
+      <i class="icon-mine"></i>
+    </router-link>
   </header>
 </template>
 

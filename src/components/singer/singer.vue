@@ -1,19 +1,22 @@
 <template>
-  <div class="singer">
+  <div class="singer" ref="singer">
     <list-view :data="singers" @clickItem="clickSinger" ref="singerList"></list-view>
+    <router-view></router-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import Singer from 'common/entity/singer'
 import ListView from 'base/listView/listView'
-import { mapMutations } from 'vuex'
 import { getSingerList } from 'api/singer'
+import { mapMutations } from 'vuex'
+import { playListMixin } from 'common/js/mixin'
 
 const HOT_NAME = '热'
 const HOT_SINGER_NUM = 10
 
 export default {
+  mixins: [playListMixin],
   data() {
     return {
       singers: []
@@ -23,6 +26,11 @@ export default {
     this._getSingerList()
   },
   methods: {
+    handlePlayList(playList) {
+      const bottom = playList.length ? '60px' : ''
+      this.$refs['singer'].style.bottom = bottom
+      this.$refs['singerList'].refresh()
+    },
     clickSinger(singer) {
       this.$router.push({
         path: `/singer/${singer.mid}`

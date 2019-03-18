@@ -1,11 +1,81 @@
 <template>
-  <div>
-    排行页面
+  <div class="rank" ref="rank">
+    <scroll :data="topList" class="toplist" ref="topList">
+      <ul>
+        <li
+          @click="selectItem(item)"
+          class="item"
+          v-for="(item, index) in topList"
+          :key="index"
+        >
+          <div class="icon">
+            <img width="100" height="100" v-lazy="item.picUrl"/>
+          </div>
+          <ul class="songlist">
+            <li
+              class="song"
+              v-for="(song, index) in item.songList"
+              :key="index"
+            >
+              <span>{{index + 1}}</span>
+              <span>{{song.songname}}-{{song.singername}}</span>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <div class="loading-container" v-show="!topList.length">
+        <loading></loading>
+      </div>
+    </scroll>
+    <router-view></router-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
+import { getTopList } from 'api/rank'
+import { isEqualSuccessCode, normalizeHttpsUrl } from 'common/js/util'
+import { playListMixin } from 'common/js/mixin'
+import { mapMutations } from 'vuex'
 
+export default {
+  mixins: [playListMixin],
+  created() {
+    this._getTopList()
+  },
+  data() {
+    return {
+      topList: []
+    }
+  },
+  methods: {
+    handlePlayList(playlist) {
+      const bottom = playlist.length ? '60px' : ''
+      this.$refs['rank'].style.bottom = bottom
+      this.$refs['topList'].refresh()
+    },
+    selectItem(item) {
+      this.$router.push({
+        path: `/rank/${item.id}`
+      })
+      this.setTopList(item)
+    },
+    async _getTopList() {
+      const res = await getTopList()
+      if (isEqualSuccessCode(res.code)) {
+        this.topList = normalizeHttpsUrl(res.data.topList, 'picUrl')
+      }
+    },
+    ...mapMutations({
+      'setTopList': 'SET_TOP_LIST'
+    })
+  },
+  components: {
+    Scroll,
+    Loading
+  }
+}
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
